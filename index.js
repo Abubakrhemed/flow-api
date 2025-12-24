@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-const express = require("express");
 require("dotenv").config();
-const app = express();
-app.use(express.json());
+const app = require("./app.js");
 
 const PORT = process.env.PORT || 3004;
 const MONGODB_URI = process.env.MONGODB_URI;
