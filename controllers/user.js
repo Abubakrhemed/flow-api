@@ -26,4 +26,18 @@ userRouter.post("/", async (req, res) => {
   }
 });
 
+userRouter.get("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ error: "no user found" });
+    }
+    res.status(200).send(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "coul'nt fetch user" });
+  }
+});
+
 module.exports = userRouter;
