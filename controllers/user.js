@@ -40,4 +40,24 @@ userRouter.get("/:id", async (req, res) => {
   }
 });
 
+userRouter.put("/:id", async (req, res) => {
+  try {
+    const { stats } = req.body;
+    const id = req.params.id;
+    const user = await User.findByIdAndUpdate(
+      id,
+      { stats },
+      { new: true, runValidators: true, context: "query" },
+    );
+    if (!user) {
+      return res.status(400).json({ error: "user not found" });
+    }
+
+    res.status(201).send(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "coulndt update users stats" });
+  }
+});
+
 module.exports = userRouter;

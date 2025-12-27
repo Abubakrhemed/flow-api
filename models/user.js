@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  stats: {
+    type: Object,
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);
