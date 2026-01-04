@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   stats: {
-    type: Object,
+    type: Array,
   },
 });
 
