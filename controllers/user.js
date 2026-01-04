@@ -44,18 +44,19 @@ userRouter.put("/:id", async (req, res) => {
   try {
     const { stats } = req.body;
     const id = req.params.id;
-    const user = await User.findByIdAndUpdate(
-      id,
-      {
-        $push: {
-          stats: { $each: [stats] },
-        },
-      },
-      { new: true, runValidators: true, context: "query" },
-    );
+    const user = await User.findById(id);
+
     if (!user) {
       return res.status(400).json({ error: "user not found" });
     }
+    const incomingTitle = stats.active_tab_title;
+
+    if (user.stats.some((t) => t.active_tab_title === incomingTitle)) {
+      return res.status(400).json({ error: "no duplicate tabs aloud" });
+    }
+
+    user.stats.push(stats);
+    await user.save();
 
     res.status(201).send(user);
   } catch (error) {
