@@ -60,6 +60,7 @@ userRouter.put("/:id", async (req, res) => {
 
     res.status(201).send(user);
   } catch (error) {
+    console.log("request body", req.body);
     console.log(error);
     res.status(500).json({ error: "coulndt update users stats" });
   }
