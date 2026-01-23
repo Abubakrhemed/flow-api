@@ -49,13 +49,13 @@ userRouter.put("/:id", async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: "user not found" });
     }
-    const incomingTitle = stats.active_tab_title;
+    /*const incomingTitle = stats.active_tab_title;
 
     if (user.stats.some((t) => t.active_tab_title === incomingTitle)) {
       return res.status(400).json({ error: "no duplicate tabs aloud" });
     }
-
-    user.stats.push(stats);
+*/
+    user.stats = stats;
     await user.save();
 
     res.status(201).send(user);
@@ -63,6 +63,20 @@ userRouter.put("/:id", async (req, res) => {
     console.log("request body", req.body);
     console.log(error);
     res.status(500).json({ error: "coulndt update users stats" });
+  }
+});
+
+userRouter.delete("/stats/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
+    if (user) {
+      user.stats = [];
+      await user.save();
+      res.send({ user: user, msg: "deleted" });
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
