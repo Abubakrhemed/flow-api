@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   stats: {
     type: Array,
   },
+  TotalTime: Number,
 });
 
 module.exports = mongoose.model("User", userSchema);

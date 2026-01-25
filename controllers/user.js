@@ -16,7 +16,7 @@ userRouter.post("/", async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await new User({ username, passwordHash });
+    const user = await new User({ username, passwordHash, TotalTime: 0 });
     await user.save();
     res.status(201).send(user);
     console.log(user);
