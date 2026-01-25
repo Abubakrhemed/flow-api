@@ -42,7 +42,7 @@ userRouter.get("/:id", async (req, res) => {
 
 userRouter.put("/:id", async (req, res) => {
   try {
-    const { stats } = req.body;
+    const { stats, TotalTime } = req.body;
     const id = req.params.id;
     const user = await User.findById(id);
 
@@ -56,6 +56,7 @@ userRouter.put("/:id", async (req, res) => {
     }
 */
     user.stats = stats;
+    user.TotalTime = TotalTime;
     await user.save();
 
     res.status(201).send(user);
