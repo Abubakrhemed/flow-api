@@ -73,6 +73,7 @@ userRouter.delete("/stats/:id", async (req, res) => {
     const user = await User.findById(id);
     if (user) {
       user.stats = [];
+      user.TotalTime = 0;
       await user.save();
       res.send({ user: user, msg: "deleted" });
     }
