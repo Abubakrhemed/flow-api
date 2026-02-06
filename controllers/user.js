@@ -82,4 +82,20 @@ userRouter.delete("/stats/:id", async (req, res) => {
   }
 });
 
+userRouter.delete("/account/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const deleted = await User.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "no user found" });
+    }
+
+    return res.sendStatus(204);
+  } catch (error) {
+    return res.status(500).json({ error: "failed try again later" });
+  }
+});
+
 module.exports = userRouter;
