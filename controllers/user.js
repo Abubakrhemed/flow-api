@@ -19,7 +19,6 @@ userRouter.post("/", async (req, res) => {
     const user = await new User({ username, passwordHash, TotalTime: 0 });
     await user.save();
     res.status(201).send(user);
-    console.log(user);
   } catch (err) {
     res.status(500).json({ error: "couldnt sighn up" });
     console.log(err);
@@ -49,12 +48,7 @@ userRouter.put("/:id", async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: "user not found" });
     }
-    /*const incomingTitle = stats.active_tab_title;
 
-    if (user.stats.some((t) => t.active_tab_title === incomingTitle)) {
-      return res.status(400).json({ error: "no duplicate tabs aloud" });
-    }
-*/
     user.stats = stats;
     user.TotalTime = TotalTime;
     await user.save();
