@@ -8,4 +8,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/api/user", userRouter);
 app.use("/api/login", loginRouter);
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" })
+})
 module.exports = app;
