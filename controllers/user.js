@@ -16,7 +16,7 @@ userRouter.post("/", async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await new User({ username, passwordHash, TotalTime: 0 });
+    const user = new User({ username, passwordHash, dailyStats: [] });
     await user.save();
     res.status(201).send(user);
   } catch (err) {
@@ -41,18 +41,27 @@ userRouter.get("/:id", async (req, res) => {
 
 userRouter.put("/:id", async (req, res) => {
   try {
-    const { stats, TotalTime } = req.body;
+    const { date, stats, totalTime } = req.body;
     const id = req.params.id;
-    const user = await User.findById(id);
 
+    if (!date) {
+      return res.status(400).json({ error: "date is required" });
+    }
+
+    const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({ error: "user not found" });
     }
 
-    user.stats = stats;
-    user.TotalTime = TotalTime;
-    await user.save();
+    const dayIndex = user.dailyStats.findIndex((d) => d.date === date);
+    if (dayIndex !== -1) {
+      user.dailyStats[dayIndex].stats = stats;
+      user.dailyStats[dayIndex].totalTime = totalTime;
+    } else {
+      user.dailyStats.push({ date, stats, totalTime });
+    }
 
+    await user.save();
     res.status(201).send(user);
   } catch (error) {
     console.log("request body", req.body);
@@ -61,13 +70,42 @@ userRouter.put("/:id", async (req, res) => {
   }
 });
 
+userRouter.delete("/stats/:id/:date", async (req, res) => {
+  try {
+    const { id, date } = req.params;
+    const { tabTitle } = req.body;
+
+    if (!tabTitle) {
+      return res.status(400).json({ error: "tabTitle is required" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "no user found" });
+    }
+
+    const day = user.dailyStats.find((d) => d.date === date);
+    if (!day) {
+      return res.status(404).json({ error: "no stats found for that date" });
+    }
+
+    day.stats = day.stats.filter((t) => t.active_tab_title !== tabTitle);
+    day.totalTime = day.stats.reduce((acc, t) => acc + (t.time_spent || 0), 0);
+
+    await user.save();
+    res.status(200).send({ user, msg: "tab cleared" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "couldn't clear tab" });
+  }
+});
+
 userRouter.delete("/stats/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const user = await User.findById(id);
     if (user) {
-      user.stats = [];
-      user.TotalTime = 0;
+      user.dailyStats = [];
       await user.save();
       res.send({ user: user, msg: "deleted" });
     }
